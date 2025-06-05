@@ -1,0 +1,86 @@
+﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
+using NewsFlow.ForgotPassword;
+using NewsFlow.News;
+using NewsFlow.Register;
+using System.IdentityModel.Tokens.Jwt;
+
+namespace NewsFlow.Login;
+
+public partial class LoginPage : ContentPage
+{
+    private readonly AuthApiService _apiService = new();
+
+    public LoginPage()
+    {
+        InitializeComponent();
+        CheckLoginStatus();
+    }
+
+    private async void OnLoginClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var token = await _apiService.Login(EmailEntry.Text, PasswordEntry.Text);
+            if (!string.IsNullOrEmpty(token))
+            {
+                await SecureStorage.SetAsync("auth_token", token);
+                Preferences.Set("remember_me", RememberMeCheckBox.IsChecked);
+
+                // Navighează în AppShell, nu doar NewsPage
+                Application.Current.MainPage = new AppShell();
+            }
+            else
+            {
+                await DisplayAlert("Eroare", "Autentificare eșuată. Verifică emailul și parola.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Eroare", $"A apărut o eroare:\n{ex.Message}", "OK");
+            // Dacă vrei și detalii de debugging:
+            System.Diagnostics.Debug.WriteLine(ex);
+        }
+    }
+
+    private async void CheckLoginStatus()
+    {
+        var token = await SecureStorage.GetAsync("auth_token");
+        bool rememberMe = Preferences.Get("remember_me", false);
+
+        // Only navigate to NewsPage if the token is valid AND "Remember Me" is enabled
+        if (!string.IsNullOrEmpty(token) && rememberMe && IsTokenValid(token))
+        {
+            Application.Current.MainPage = new NavigationPage(new NewsPage());
+        }
+    }
+
+    private bool IsTokenValid(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+
+        try
+        {
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+            if (jwtToken == null) return false;
+
+            return jwtToken.ValidTo > DateTime.UtcNow;
+        }
+        catch
+        {
+            return false;
+        }
+
+
+    }
+
+    private async void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new ForgotPasswordPage());
+    }
+
+    private async void TapGestureRecognizer_Register(object sender, TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new RegisterPage());
+    }
+}

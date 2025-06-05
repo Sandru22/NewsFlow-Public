@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NewsFlow.ForgotPassword.EnterCodePage"
+             BackgroundColor="White"
+             xmlns:navigation="clr-namespace:Microsoft.Maui.Controls;assembly=Microsoft.Maui.Controls"
+            navigation:NavigationPage.HasNavigationBar="False">
+    <VerticalStackLayout VerticalOptions="Center">
+        <VerticalStackLayout.BackgroundColor>
+            <OnPlatform x:TypeArguments="Color">
+                <On Platform="WinUI" Value="LightGray"/>
+                <On Platform="Android, iOS" Value="White"/>
+            </OnPlatform>
+        </VerticalStackLayout.BackgroundColor>
+        <VerticalStackLayout.WidthRequest>
+            <OnPlatform x:TypeArguments="x:Double">
+                <On Platform="WinUI" Value="400"/>
+                <On Platform="Android, iOS" Value="-1"/>
+            </OnPlatform>
+        </VerticalStackLayout.WidthRequest>
+        <VerticalStackLayout.HeightRequest>
+            <OnPlatform x:TypeArguments="x:Double">
+                <On Platform="WinUI" Value="500"/>
+                <On Platform="Android, iOS" Value="-1"/>
+            </OnPlatform>
+        </VerticalStackLayout.HeightRequest>
+
+        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+            <Label Text="Introdu codul primit pe email"
+               FontSize="28"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               TextColor="#333"/>
+            <Entry x:Name="CodeEntry" 
+               Placeholder="Cod de 6 cifre" 
+               Keyboard="Numeric"
+               BackgroundColor="#f0f0f0"
+               Margin="0,50"
+               HeightRequest="50"
+               TextColor="Black"/>
+            <Button Text="Verifică codul" 
+                Clicked="Button_Clicked"
+                BackgroundColor="#007aff"
+                TextColor="White"
+                CornerRadius="10"
+                HeightRequest="50"
+                FontSize="16"/>
+        </VerticalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>

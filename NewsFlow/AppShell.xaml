@@ -1,0 +1,102 @@
+<Shell
+    x:Class="NewsFlow.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:NewsFlow"
+    Shell.FlyoutBehavior="Flyout"
+    Title="NewsFlow">
+
+    <FlyoutItem
+        Title="📰 For you"
+        Route="NewsPage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:News.NewsPage}"
+            Route="NewsPage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="⚽ Sport"
+        Route="SportPage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:News.SportPage}"
+            Route="SportPage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+    Title="💰 Economie"
+    Route="EconomiePage">
+        <ShellContent
+        ContentTemplate="{DataTemplate local:News.EconomiePage}"
+        Route="EconomiePage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="🏛️ Politica"
+        Route="PoliticaPage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:News.PoliticaPage}"
+            Route="PoliticaPage"/>
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="👨🏻‍💻 Tech"
+        Route="TechPage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:News.TechPage}"
+            Route="TechPage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="🚗 Auto"
+        Route="AutoPage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:News.AutoPage}"
+            Route="AutoPage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="🌍 Externe"
+        Route="ExternePage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:News.ExternePage}"
+            Route="ExternePage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="🌡️ Meteo"
+        Route="MeteoPage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:News.MeteoPage}"
+            Route="MeteoPage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+    Title="🆕 Actuale"
+    Route="ActualePage">
+        <ShellContent
+        ContentTemplate="{DataTemplate local:News.ActualePage}"
+        Route="ActualePage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="⚕️ Sanatate"
+        Route="SanatatePage">
+        <ShellContent
+    ContentTemplate="{DataTemplate local:News.SanatatePage}"
+    Route="SanatatePage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+    Title="👥 Sociale"
+    Route="SocialePage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:News.SocialePage}"
+            Route="SocialePage" Shell.NavBarIsVisible="False"/>
+    </FlyoutItem>
+
+    <MenuItem
+        Text="🚪 Logout"
+        Clicked="MenuItem_Clicked"
+        IsDestructive="True" />
+
+</Shell>

@@ -1,0 +1,21 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NewsFlow.Web.WebViewPage"
+             Title="WebViewPage">
+    <Grid RowDefinitions="Auto,*">
+        <!-- definim 2 rânduri: unul pentru buton, unul pentru WebView -->
+
+        <StackLayout Orientation="Horizontal"
+                     Padding="10"
+                     BackgroundColor="WhiteSmoke"
+                     Grid.Row="0">
+            <Button Text="🔊 Citește complet" Clicked="Button_Clicked"/>
+            <Button x:Name="StopButton" Text="⏹️ Oprește" Clicked="StopButton_Clicked" IsVisible="False"/>
+        </StackLayout>
+
+        <ScrollView Grid.Row="1">
+            <WebView x:Name="NewsWebView" />
+        </ScrollView>
+
+    </Grid>
+</ContentPage>
