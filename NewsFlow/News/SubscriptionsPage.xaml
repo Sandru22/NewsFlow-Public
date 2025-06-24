@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="NewsFlow.News.ExternePage"
-             x:Name="ExternePageRoot"
+             x:Class="NewsFlow.News.SubscriptionsPage"
+             x:Name="SubscriptionsPageRoot"
              Title=""
-Shell.BackgroundColor="LightGray"
+             Shell.BackgroundColor="LightGray"
              xmlns:local="clr-namespace:NewsFlow.Convertors">
 
 
@@ -17,7 +17,7 @@ Shell.BackgroundColor="LightGray"
     </ContentPage.ToolbarItems>
     <Shell.TitleView>
 
-        <Label Text="Ştiri Externe"
+        <Label Text="Abonamente"
                HorizontalOptions="Center"
                VerticalOptions="Center"
                TextColor="#202020"
@@ -56,7 +56,7 @@ Shell.BackgroundColor="LightGray"
                 VerticalOptions="Center" 
                     />
 
-            <Label Text="Știri Externe"
+            <Label Text="Știri Subscriptions"
                FontSize="40"
                FontAttributes="Bold"
                HorizontalOptions="CenterAndExpand"
@@ -89,7 +89,7 @@ Shell.BackgroundColor="LightGray"
 
         <!-- Android / iOS CollectionView with RefreshView -->
         <RefreshView IsRefreshing="{Binding IsRefreshing}"
-                     Command="{Binding Path=BindingContext.RefreshCommand, Source={x:Reference ExternePageRoot}}"
+                     Command="{Binding Path=BindingContext.RefreshCommand, Source={x:Reference SubscriptionsPageRoot}}"
                      IsVisible="{OnPlatform WinUI=False, Android=True, iOS=True}"
                      Grid.Row="1">
             <CollectionView ItemsSource="{Binding News}"
@@ -106,13 +106,13 @@ Shell.BackgroundColor="LightGray"
                                CornerRadius="10"
                                HasShadow="True">
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Path=BindingContext.OpenNewsCommand, Source={x:Reference ExternePageRoot}}"
+                                <TapGestureRecognizer Command="{Binding Path=BindingContext.OpenNewsCommand, Source={x:Reference SubscriptionsPageRoot}}"
                                                       CommandParameter="{Binding .}" />
                             </Frame.GestureRecognizers>
                             <VerticalStackLayout Spacing="10">
                                 <Grid ColumnDefinitions="Auto,Auto,*,Auto" VerticalOptions="Center">
                                     <Button Text="{Binding HasSubscribed, Converter={StaticResource SubscribeButtonTextConverter}}"
-                                            Command="{Binding Path=BindingContext.SubscribeCommand, Source={x:Reference ExternePageRoot}}"
+                                            Command="{Binding Path=BindingContext.SubscribeCommand, Source={x:Reference SubscriptionsPageRoot}}"
                                             CommandParameter="{Binding NewsId}"
                                             BackgroundColor="Transparent"
                                             FontSize="20"
@@ -157,14 +157,14 @@ Shell.BackgroundColor="LightGray"
                                     <StackLayout Orientation="Horizontal" Spacing="5">
                                         <Label Text="{Binding Likes}" FontSize="20" VerticalOptions="Center" TextColor="Black" />
                                         <Button Text="{Binding HasLiked, Converter={StaticResource LikeButtonTextConverter}}"
-                                                Command="{Binding Path=BindingContext.LikeNewsCommand, Source={x:Reference ExternePageRoot}}"
+                                                Command="{Binding Path=BindingContext.LikeNewsCommand, Source={x:Reference SubscriptionsPageRoot}}"
                                                 CommandParameter="{Binding NewsId}"
                                                 BackgroundColor="Transparent"
                                                 WidthRequest="70"
                                                 FontSize="32" />
                                     </StackLayout>
                                     <Button Text="Distribuie ➤"
-                                            Command="{Binding Path=BindingContext.ShareNewsCommand, Source={x:Reference ExternePageRoot}}"
+                                            Command="{Binding Path=BindingContext.ShareNewsCommand, Source={x:Reference SubscriptionsPageRoot}}"
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="Transparent"
                                             TextColor="Black"
@@ -206,13 +206,13 @@ Shell.BackgroundColor="LightGray"
                            HasShadow="True"
                            WidthRequest="1000">
                         <Frame.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Path=BindingContext.OpenNewsCommand, Source={x:Reference ExternePageRoot}}"
+                            <TapGestureRecognizer Command="{Binding Path=BindingContext.OpenNewsCommand, Source={x:Reference SubscriptionsPageRoot}}"
                                                   CommandParameter="{Binding .}" />
                         </Frame.GestureRecognizers>
                         <VerticalStackLayout Spacing="10">
                             <Grid ColumnDefinitions="Auto,Auto,*,Auto" VerticalOptions="Center">
                                 <Button Text="{Binding HasSubscribed, Converter={StaticResource SubscribeButtonTextConverter}}"
-                                        Command="{Binding Path=BindingContext.SubscribeCommand, Source={x:Reference ExternePageRoot}}"
+                                        Command="{Binding Path=BindingContext.SubscribeCommand, Source={x:Reference SubscriptionsPageRoot}}"
                                         CommandParameter="{Binding NewsId}"
                                         BackgroundColor="Transparent"
                                         FontSize="20"
@@ -258,7 +258,7 @@ Shell.BackgroundColor="LightGray"
                                 <StackLayout Orientation="Horizontal" Spacing="5" Grid.Column="0">
                                     <Label Text="{Binding Likes}" FontSize="18" VerticalOptions="Center" TextColor="Black" />
                                     <Button Text="{Binding HasLiked, Converter={StaticResource LikeButtonTextConverter}}"
-                                            Command="{Binding Path=BindingContext.LikeNewsCommand, Source={x:Reference ExternePageRoot}}"
+                                            Command="{Binding Path=BindingContext.LikeNewsCommand, Source={x:Reference SubscriptionsPageRoot}}"
                                             CommandParameter="{Binding NewsId}"
                                             BackgroundColor="Transparent"
                                             FontSize="24"
@@ -267,7 +267,7 @@ Shell.BackgroundColor="LightGray"
 
                                 <!-- Distribuie -->
                                 <Button Text="Distribuie ➤"
-                                        Command="{Binding Path=BindingContext.ShareNewsCommand, Source={x:Reference ExternePageRoot}}" 
+                                        Command="{Binding Path=BindingContext.ShareNewsCommand, Source={x:Reference SubscriptionsPageRoot}}" 
                                         CommandParameter="{Binding .}"
                                         BackgroundColor="Transparent"
                                         HorizontalOptions="End"

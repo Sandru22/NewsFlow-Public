@@ -5,17 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewsFlow.Models
+namespace NewsFlow.Convertors
 {
-    class LikeButtonTextConverter : IValueConverter
+    public class AudioColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool hasLiked)
+            if (value is bool isHighlighted)
             {
-                return hasLiked ? "❤️" : "🤍";
+                return isHighlighted ? Colors.DarkGray : Colors.LightGray;
             }
-            return "🤍";
+            return Colors.LightGray;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

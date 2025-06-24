@@ -1,4 +1,5 @@
 ﻿using NewsFlow.Models;
+using NewsFlow.Services;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -27,7 +28,6 @@ public partial class EnterCodePage : ContentPage
 
             if (response.IsSuccessStatusCode)
             {
-                // Citim conținutul JSON și extragem token-ul corect
                 var jsonString = await response.Content.ReadAsStringAsync();
                 var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(jsonString,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -53,9 +53,4 @@ public partial class EnterCodePage : ContentPage
         }
     }
 
-    // Clasă pentru deserializarea răspunsului JSON
-    private class TokenResponse
-    {
-        public string Token { get; set; }
-    }
 }

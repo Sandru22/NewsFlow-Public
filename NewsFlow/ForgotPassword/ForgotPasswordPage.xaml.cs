@@ -1,4 +1,4 @@
-using NewsFlow.Models;
+using NewsFlow.Services;
 using System.Net.Http.Json;
 
 namespace NewsFlow.ForgotPassword;
@@ -22,7 +22,6 @@ public partial class ForgotPasswordPage : ContentPage
         {
             await Navigation.PushAsync(new EnterCodePage(email));
         }
-
 
     }
 

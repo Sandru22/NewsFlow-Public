@@ -15,6 +15,8 @@ namespace NewsFlow.Models
         public string Title { get; set; }
         public string Content { get; set; }
         public string Url { get; set; }
+
+        public string Source { get; set; }
         public DateTime publishedAt { get; set; }
 
         private int _likes;
@@ -25,6 +27,17 @@ namespace NewsFlow.Models
             {
                 _likes = value;
                 OnPropertyChanged(nameof(Likes));
+            }
+        }
+
+        private bool _isHighlighted;
+        public bool IsHighlighted
+        {
+            get => _isHighlighted;
+            set
+            {
+                _isHighlighted = value;
+                OnPropertyChanged(nameof(IsHighlighted));
             }
         }
 
@@ -39,7 +52,17 @@ namespace NewsFlow.Models
             }
         }
 
-        // Lista de like-uri
+        private bool _hasSubscribed;
+        public bool HasSubscribed
+        {
+            get => _hasSubscribed;
+            set
+            {
+                _hasSubscribed = value;
+                OnPropertyChanged(nameof(HasSubscribed));
+            }
+        }
+       
         public List<NewsLike> NewsLikes { get; set; } = new List<NewsLike>();
 
         protected void OnPropertyChanged(string propertyName)
@@ -52,19 +75,33 @@ namespace NewsFlow.Models
         public ICommand OpenNewsCommand { get; }
         public bool IsImageVisible => !string.IsNullOrWhiteSpace(ImageUrl);
 
-        public string Source
+        public string Site
         {
             get
             {
                 if (Uri.TryCreate(Url, UriKind.Absolute, out var uri))
                 {
-                    return uri.Host; // ex: www.stiripesurse.ro
+                    var segments = uri.AbsolutePath
+                        .Trim('/')
+                        .Split('/')
+                        .Where(s => !string.Equals(s, "rss", StringComparison.OrdinalIgnoreCase))
+                        .Where(s => !string.Equals(s, "feed", StringComparison.OrdinalIgnoreCase))
+                        .Where(s => !s.Contains("-"))
+                        .Where(s => !string.Equals(s, "stiri", StringComparison.OrdinalIgnoreCase))
+                        .ToArray();
+
+                    if (segments.Length > 0)
+                    {
+                        return $"{uri.Host}/{string.Join("/", segments)}";
+                    }
+
+                    return uri.Host;
                 }
                 return string.Empty;
             }
         }
 
-        
+        public bool IsSubscribed { get; set; }
     }
 
     

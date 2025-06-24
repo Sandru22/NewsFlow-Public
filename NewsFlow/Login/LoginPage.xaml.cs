@@ -1,9 +1,13 @@
 ﻿using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 using NewsFlow.ForgotPassword;
+using NewsFlow.Models;
 using NewsFlow.News;
 using NewsFlow.Register;
+using NewsFlow.Services;
+using Plugin.Firebase.CloudMessaging;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Json;
 
 namespace NewsFlow.Login;
 
@@ -26,7 +30,28 @@ public partial class LoginPage : ContentPage
             {
                 await SecureStorage.SetAsync("auth_token", token);
                 Preferences.Set("remember_me", RememberMeCheckBox.IsChecked);
+#if ANDROID
+                var status = await CheckAndRequestNotificationPermissionAsync();
 
+                if (status == PermissionStatus.Granted)
+                {
+
+
+
+                    string userId = ExtractUserIdFromToken(token); // vezi mai jos funcția
+
+
+                    var deviceToken = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
+
+                    var client = new HttpClient();
+                    await client.PostAsJsonAsync($"{AppConfig.ApiBaseUrl}/News/register-device", new
+                    {
+                        userId = userId,
+                        deviceToken = deviceToken
+                    });
+
+            }
+#endif
                 // Navighează în AppShell, nu doar NewsPage
                 Application.Current.MainPage = new AppShell();
             }
@@ -51,8 +76,16 @@ public partial class LoginPage : ContentPage
         // Only navigate to NewsPage if the token is valid AND "Remember Me" is enabled
         if (!string.IsNullOrEmpty(token) && rememberMe && IsTokenValid(token))
         {
+
             Application.Current.MainPage = new NavigationPage(new NewsPage());
         }
+    }
+
+    private string ExtractUserIdFromToken(string jwt)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.ReadToken(jwt) as JwtSecurityToken;
+        return token?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
     }
 
     private bool IsTokenValid(string token)
@@ -73,6 +106,18 @@ public partial class LoginPage : ContentPage
 
 
     }
+
+    public async Task<PermissionStatus> CheckAndRequestNotificationPermissionAsync()
+    {
+        await CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
+        var status = await Permissions.CheckStatusAsync<Permissions.PostNotifications>();
+        if (status != PermissionStatus.Granted)
+        {
+            status = await Permissions.RequestAsync<Permissions.PostNotifications>();
+        }
+        return status;
+    }
+
 
     private async void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
     {

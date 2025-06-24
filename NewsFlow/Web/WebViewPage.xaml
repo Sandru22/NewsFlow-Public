@@ -1,21 +1,72 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NewsFlow.Web.WebViewPage"
-             Title="WebViewPage">
-    <Grid RowDefinitions="Auto,*">
-        <!-- definim 2 rânduri: unul pentru buton, unul pentru WebView -->
+             Title=""
+             Shell.BackgroundColor="LightGray"
+             xmlns:local="clr-namespace:NewsFlow.Convertors">
 
-        <StackLayout Orientation="Horizontal"
-                     Padding="10"
-                     BackgroundColor="WhiteSmoke"
-                     Grid.Row="0">
-            <Button Text="🔊 Citește complet" Clicked="Button_Clicked"/>
-            <Button x:Name="StopButton" Text="⏹️ Oprește" Clicked="StopButton_Clicked" IsVisible="False"/>
-        </StackLayout>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <local:SubscribeButtonTextConverterclass x:Key="SubscribeButtonTextConverter"/>
+            <local:SubscribeButtonTextConverterWebView x:Key="SubscribeButtonTextConverterWebView"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+
+    <Shell.TitleView>
+
+        <Label Text="{Binding Site}"
+           HorizontalOptions="Center"
+           VerticalOptions="Center"
+           TextColor="#202020"
+           FontSize="20"
+           FontAttributes="Bold"
+           Margin="0,0,60,0"/>
+    </Shell.TitleView>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <Grid ColumnDefinitions="Auto,*,auto,*,auto" Grid.Row="0" Padding="10">
+
+            <Button Text="{Binding HasSubscribed, Converter={StaticResource SubscribeButtonTextConverterWebView}}"
+        Clicked="OnSubscribeClicked"
+        BackgroundColor="LightGray"
+        VerticalOptions="Center"
+        Grid.Column="0" />
+
+
+            <Button x:Name="StartButton"
+            Text="🔊 Ascultă ştirea"
+            Clicked="Button_Clicked"
+            Grid.Column="4"
+            HorizontalOptions="Start"
+                    BackgroundColor="LightGray"
+                    TextColor="Black"/>
+            
+
+            <Label x:Name="NewsTitleLabel"
+                   Text="{Binding Site}"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center"
+                   Grid.Column="2"
+                   TextColor="White"
+                   HorizontalOptions="EndAndExpand"
+                   Margin="0,0,0,0"
+                    IsVisible="{OnPlatform Android=False,WinUI=True}"/>
+
+            <Button x:Name="StopButton"
+            Text="⏹️ Oprește"
+            Clicked="StopButton_Clicked"
+            IsVisible="False"
+            Grid.Column="4"
+            HorizontalOptions="End" 
+                    BackgroundColor="LightGray"
+                    TextColor="Black"/>
+        </Grid>
 
         <ScrollView Grid.Row="1">
             <WebView x:Name="NewsWebView" />
         </ScrollView>
-
     </Grid>
 </ContentPage>

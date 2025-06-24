@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewsFlow
+namespace NewsFlow.Models
 {
-    public interface ITextToSpeechSettingsOpener
+    public class LoginResponse
     {
-        Task OpenTtsSettings();
+        public string Token { get; set; }
     }
 }

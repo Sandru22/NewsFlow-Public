@@ -27,10 +27,11 @@ public class NewsViewModel : BindableObject
     public ICommand ReadNewsCommand { get; private set; }
     public ICommand LoadMoreNewsCommand { get; private set; }
     public ICommand RefreshCommand { get; private set; }
+    public ICommand SubscribeCommand { get; private set; }
 
     private readonly NewsApiService _newsService = new();
 
-
+    public Action<NewsItem>? ScrollToItemCallback { get; set; }
     private bool _isTtsControlVisible;
     public bool IsTtsControlVisible
     {
@@ -76,7 +77,7 @@ public class NewsViewModel : BindableObject
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"❌ Eroare la refresh: {ex.Message}");
+            Debug.WriteLine($"Eroare la refresh: {ex.Message}");
             if (!await HasInternetConnectionAsync())
             {
                 await Application.Current.MainPage.DisplayAlert("Fără internet", "Nu există conexiune la internet.", "OK");
@@ -90,17 +91,14 @@ public class NewsViewModel : BindableObject
 
     public async Task ExecuteRefresh()
     {
-        Debug.WriteLine("🔄 Refresh command executed");
         if (IsLoading)
         {
-            Debug.WriteLine("🔄 Already loading, cancelling refresh animation.");
             IsRefreshing = false;
             return;
         }
 
         if (!await HasInternetConnectionAsync())
         {
-            Debug.WriteLine("❌ Nu există conexiune la internet - anulăm refresh-ul.");
             IsRefreshing = false;
             await Application.Current.MainPage.DisplayAlert("Fără internet", "Nu putem reîmprospăta știrile. Verifică conexiunea la rețea.", "OK");
             return;
@@ -113,7 +111,7 @@ public class NewsViewModel : BindableObject
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"❌ Refresh error: {ex.Message}");
+            Debug.WriteLine($"Refresh error: {ex.Message}");
         }
         finally
         {
@@ -128,7 +126,7 @@ public class NewsViewModel : BindableObject
         set
         {
             _hasMoreItems = value;
-            OnPropertyChanged();
+            OnPropertyChanged(nameof(HasMoreItems)); 
             ((Command)LoadMoreNewsCommand).ChangeCanExecute();
         }
     }
@@ -162,12 +160,13 @@ public class NewsViewModel : BindableObject
         ShareNewsCommand = new Command<NewsItem>(async (NewsItem) => await ShareNews(NewsItem));
         LoadMoreNewsCommand = new Command(async () => await LoadMoreNews(), () => !IsLoading && HasMoreItems);
         RefreshCommand = new Command(async () => await ExecuteRefresh());
-        ReadNewsCommand = new Command<ObservableCollection<NewsItem>>(newsList =>
+        SubscribeCommand = new Command<int>(async (id) => await SubscribeToSource(id));
+        ReadNewsCommand = new Command<ObservableCollection<NewsItem>>(async newsList =>
         {
             _newsListForTTS = newsList.ToList();
             _currentNewsIndex = 0;
             IsTtsControlVisible = true;
-            _ = ReadNewsLoopAsync();
+            await ReadNewsLoopAsync(); 
         });
     }
     private async Task<bool> HasInternetConnectionAsync()
@@ -198,6 +197,8 @@ public class NewsViewModel : BindableObject
     {
         _ttsCancellationTokenSource?.Cancel();
         IsTtsControlVisible = false;
+        var current = _newsListForTTS[_currentNewsIndex];
+        current.IsHighlighted = false;
     });
 
     public ICommand NextNewsTtsCommand => new Command(async () =>
@@ -207,7 +208,7 @@ public class NewsViewModel : BindableObject
             _ttsCancellationTokenSource?.Cancel();
             _ttsCancellationTokenSource = new CancellationTokenSource();
             _currentNewsIndex++;
-            await ReadCurrentNewsAsync();
+            await ReadNewsLoopAsync();
         }
     });
 
@@ -218,28 +219,57 @@ public class NewsViewModel : BindableObject
             _ttsCancellationTokenSource?.Cancel();
             _ttsCancellationTokenSource = new CancellationTokenSource();
             _currentNewsIndex--;
-            await ReadCurrentNewsAsync();
+            await ReadNewsLoopAsync();
         }
     });
 
+
     private async Task ReadCurrentNewsAsync()
     {
+
         var locales = await TextToSpeech.GetLocalesAsync();
         var roLocale = locales?.FirstOrDefault(l => l.Language.StartsWith("ro"));
+        if (roLocale == null)
+        {
+
+#if ANDROID
+                bool goToSettings = await Application.Current.MainPage.DisplayAlert( "Limba indisponibilă", "Text-to-speech în limba română nu este disponibilă pe acest dispozitiv.\nDoriți să deschideți setările Text-to-Speech?","Da", "Nu");
+
+        if (goToSettings)
+        {
+             MainActivity.OpenTTSSettings();
+        }
+#endif
+
+#if WINDOWS
+            await Application.Current.MainPage.DisplayAlert("Limba indisponibilă", "Text-to-speech în limba română nu este disponibilă pe acest dispozitiv.\n Pentru a instala limba română accesaţi : \n - Settings > Time & Language > Speech > Add voices ", "OK");
+#endif
+
+            return;
+        }
 
         try
         {
             if (_currentNewsIndex < _newsListForTTS.Count)
             {
-                var news = _newsListForTTS[_currentNewsIndex];
-                var text = $"{news.Title}. {news.Content}";
+                
+                foreach (var item in News)
+                    item.IsHighlighted = false;
 
+                var current = _newsListForTTS[_currentNewsIndex];
+                current.IsHighlighted = true;
+
+
+                ScrollToItemCallback?.Invoke(current);
+                var text = $"{current.Title}. {current.Content}";
                 await TextToSpeechService.SpeakAsync(text, _ttsCancellationTokenSource.Token);
             }
+
+
         }
         catch (OperationCanceledException)
         {
-            // Citirea a fost oprită
+            
         }
     }
 
@@ -270,10 +300,57 @@ public class NewsViewModel : BindableObject
         }
         catch (OperationCanceledException)
         {
-            // Citirea a fost oprită
+            
         }
     }
 
+    public async Task SearchNewsAsync(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            return;
+
+        try
+        {
+            IsLoading = true;
+
+            var token = await SecureStorage.GetAsync("auth_token");
+            if (string.IsNullOrEmpty(token)) return;
+
+            var userId = GetUserIdFromToken(token);
+            if (string.IsNullOrEmpty(userId)) return;
+
+            var encoded = Uri.EscapeDataString(query);
+            var url = $"{AppConfig.ApiBaseUrl}/news/search/{encoded}?userId={userId}&page=1&pageSize=20";
+
+            var response = await _httpClient.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var results = JsonSerializer.Deserialize<List<NewsItem>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                News.Clear();
+                foreach (var item in results)
+                {
+                    var enriched = await _newsService.PopulateNewsLikesAsync(item, userId);
+                    News.Add(enriched);
+                }
+
+                HasMoreItems = false; 
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert("Eroare", "Căutarea a eșuat.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Eroare la căutare: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
     private async Task LoadMoreNews()
     {
         if (IsLoading || !HasMoreItems)
@@ -304,7 +381,7 @@ public class NewsViewModel : BindableObject
                 return;
             }
 
-            var newsList = await _newsService.GetNewsAsync(userId, Category, _currentPage, 20, token);
+            var newsList = await FetchNews(userId, _currentPage);
 
             if (newsList == null)
             {
@@ -316,14 +393,19 @@ public class NewsViewModel : BindableObject
 
             if (newsList.Count == 0)
             {
+                
                 HasMoreItems = false;
                 return;
             }
 
             foreach (var news in newsList)
             {
-                var enrichedNews = await _newsService.PopulateNewsLikesAsync(news, userId);
                 
+                if (News.Any(n => n.Url == news.Url || n.Title == news.Title || n.Content == news.Content))
+                {
+                    continue; 
+                }
+                var enrichedNews = await _newsService.PopulateNewsLikesAsync(news, userId);
                 News.Add(enrichedNews);
             }
 
@@ -347,6 +429,8 @@ public class NewsViewModel : BindableObject
     {
         try
         {
+
+
             if (news == null) return;
 
             var token = await SecureStorage.GetAsync("auth_token");
@@ -387,8 +471,16 @@ public class NewsViewModel : BindableObject
 
     private async Task LikeNews(int newsId)
     {
-        
-            var token = await SecureStorage.GetAsync("auth_token");
+
+        if (!await HasInternetConnectionAsync())
+        {
+            Debug.WriteLine("❌ Nu există conexiune la internet - anulăm încărcarea.");
+            await Application.Current.MainPage.DisplayAlert("Fără internet", "Verifică conexiunea la rețea.", "OK");
+            return;
+        }
+
+
+        var token = await SecureStorage.GetAsync("auth_token");
             if (string.IsNullOrEmpty(token))
             {
                 await Application.Current.MainPage.DisplayAlert("Eroare", "Trebuie să fii autentificat pentru a da like!", "OK");
@@ -409,6 +501,40 @@ public class NewsViewModel : BindableObject
 
     }
 
+
+    private async Task SubscribeToSource(int newsId)
+    {
+
+        if (!await HasInternetConnectionAsync())
+        {
+            await Application.Current.MainPage.DisplayAlert("Fără internet", "Verifică conexiunea la rețea.", "OK");
+            return;
+        }
+
+        var toke = await SecureStorage.GetAsync("auth_token");
+        if (string.IsNullOrEmpty(toke))
+        {
+            await Application.Current.MainPage.DisplayAlert("Eroare", "Trebuie să fii autentificat pentru a te abona!", "OK");
+            return;
+        }
+        string userId = GetUserIdFromToken(toke);
+        if (string.IsNullOrEmpty(userId))
+        {
+            await Application.Current.MainPage.DisplayAlert("Eroare", "Nu s-a putut obține ID-ul utilizatorului!", "OK");
+            return;
+        }
+
+        var newsItem = News.FirstOrDefault(n => n.NewsId == newsId);
+        if (newsItem == null) return;
+
+        var success = await _newsService.SubscribeUnsubscribeAsyc(userId,newsItem ,toke);
+
+        if (success)
+        {
+            newsItem.HasSubscribed = !newsItem.HasSubscribed;
+        }
+
+    }
     private string GetUserIdFromToken(string token)
     {
         try
@@ -427,17 +553,19 @@ public class NewsViewModel : BindableObject
     {
         try
         {
+            _ttsCancellationTokenSource?.Cancel();
+            IsTtsControlVisible = false;
+            var current = _newsListForTTS[_currentNewsIndex];
+            current.IsHighlighted = false;
             var userId = GetUserIdFromToken(await SecureStorage.GetAsync("auth_token"));
             if (!string.IsNullOrEmpty(userId))
             {
-                await _httpClient.PostAsJsonAsync(
-                    $"{AppConfig.ApiBaseUrl}/news/{news.NewsId}/view",
-                    userId);
+                await _httpClient.PostAsJsonAsync($"{AppConfig.ApiBaseUrl}/news/{news.NewsId}/view",userId);
             }
 
             if (!string.IsNullOrWhiteSpace(news.Url))
             {
-                await Application.Current.MainPage.Navigation.PushAsync(new WebViewPage(news.Url));
+                await Application.Current.MainPage.Navigation.PushAsync(new WebViewPage(news));
             }
         }
         catch (Exception ex)
@@ -445,10 +573,9 @@ public class NewsViewModel : BindableObject
             Debug.WriteLine($"Eroare la deschiderea browserului: {ex.Message}");
         }
     }
-}
 
-public class LikesData
-{
-    public int TotalLikes { get; set; }
-    public bool UserLiked { get; set; }
+    protected virtual async Task<List<NewsItem>> FetchNews(string userId, int page)
+    {
+        return await _newsService.GetNewsAsync(userId, Category, page, 20, await SecureStorage.GetAsync("auth_token"));
+    }
 }

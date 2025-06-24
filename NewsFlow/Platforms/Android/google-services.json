@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "691455684677",
+    "project_id": "newsflownotifications",
+    "storage_bucket": "newsflownotifications.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691455684677:android:dcf719428b8989d960332c",
+        "android_client_info": {
+          "package_name": "com.companyname.newsflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrrkf9g5YqIGPxcYfLlTE6ceFOtX4Hb28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -76,6 +76,41 @@ namespace NewsFlow.Services
             }
         }
 
+        public async Task<bool> SubscribeUnsubscribeAsyc(string userId,NewsItem news,string token)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage response;
+                if (news.HasSubscribed)
+                {
+                  
+                    var requestUri = $"{AppConfig.ApiBaseUrl}/news/unsubscribe/{userId}?source={news.Source}";
+                    response = await _httpClient.DeleteAsync(requestUri); 
+                }
+                else
+                {
+                   
+                    response = await _httpClient.PostAsync(
+                        $"{AppConfig.ApiBaseUrl}/news/subscribe/{userId}?source={news.Source}",
+                        new StringContent(JsonSerializer.Serialize(userId), Encoding.UTF8, "application/json"));
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Eroare", $"Operația de subscribe/unsubscribe a eșuat", "OK");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Eroare la SubscribeUnsubscribeAsyc: {ex.Message}");
+                return false;
+            }
+        }
+
         public async Task LikeUnLikeAsync(string userId, NewsItem newsItem, int newsId, string token)
         {
             try
@@ -125,7 +160,20 @@ namespace NewsFlow.Services
             }
         }
 
-       
 
+        public async Task<NewsItem> GetNewsByIdAsync(int newsId, string userId, string token)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.GetAsync($"{AppConfig.ApiBaseUrl}/news/{newsId}?userId={userId}");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var stream = await response.Content.ReadAsStreamAsync();
+            return await JsonSerializer.DeserializeAsync<NewsItem>(stream, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
     }
 }

@@ -1,4 +1,5 @@
 using NewsFlow.ViewModels;
+using NewsFlow.Models; 
 
 namespace NewsFlow.News;
 
@@ -10,7 +11,9 @@ public partial class ExternePage : ContentPage
 #if WINDOWS
         Shell.SetNavBarIsVisible(this, false);
 #endif
-        BindingContext = new NewsViewModel("externe");
+        var viewModel = new NewsViewModel("externe");
+        viewModel.ScrollToItemCallback = ScrollToItem;
+        BindingContext = viewModel;
     }
 
 
@@ -31,6 +34,15 @@ public partial class ExternePage : ContentPage
             viewModel.RefreshCommand.Execute(null);
         }
     }
+    public void ScrollToItem(NewsItem item)
+    {
+        if (item == null) return;
 
+#if ANDROID || IOS
+    NewsListView_Android.ScrollTo(item, position: ScrollToPosition.Start, animate: true);
+#elif WINDOWS
+        NewsListView_Windows.ScrollTo(item, position: ScrollToPosition.Start, animate: true);
+#endif
+    }
 
 }

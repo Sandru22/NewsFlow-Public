@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewsFlow.Models
+namespace NewsFlow.Services
 {
     public static class AppConfig
     {
@@ -12,7 +12,7 @@ namespace NewsFlow.Models
 
         static AppConfig()
         {
-            ApiBaseUrl = "https://api.newsflowapi.uk/api";
+            
         }
     }
 }

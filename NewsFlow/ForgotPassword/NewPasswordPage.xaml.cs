@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Net;
-using NewsFlow.Models;
+using NewsFlow.Services;
 
 namespace NewsFlow.ForgotPassword;
 
@@ -18,7 +18,6 @@ public partial class NewPasswordPage : ContentPage
 
     private async void OnResetPasswordClicked(object sender, EventArgs e)
     {
-        // Validări
         if (string.IsNullOrWhiteSpace(PasswordEntry.Text) ||
             string.IsNullOrWhiteSpace(ConfirmPasswordEntry.Text))
         {
@@ -38,7 +37,6 @@ public partial class NewPasswordPage : ContentPage
             return;
         }
 
-        // Trimite cererea la API
         LoadingIndicator.IsVisible = true;
         LoadingIndicator.IsRunning = true;
 

@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace NewsFlow.Models
 {
-    public class NewsLike
+    public class LikesData
     {
-        public int NewsId { get; set; } 
-        public string UserId { get; set; } 
-        public DateTime LikedAt { get; set; } 
+        public int TotalLikes { get; set; }
+        public bool UserLiked { get; set; }
     }
 }

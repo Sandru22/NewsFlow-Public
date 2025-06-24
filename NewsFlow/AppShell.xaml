@@ -7,11 +7,19 @@
     Title="NewsFlow">
 
     <FlyoutItem
-        Title="📰 For you"
+        Title="📰 Pentru tine"
         Route="NewsPage">
         <ShellContent
             ContentTemplate="{DataTemplate local:News.NewsPage}"
             Route="NewsPage" />
+    </FlyoutItem>
+
+    <FlyoutItem
+    Title="📩 Abonamente"
+    Route="SubscriptionsPage">
+        <ShellContent
+    ContentTemplate="{DataTemplate local:News.SubscriptionsPage}"
+    Route="SubscriptionsPage" />
     </FlyoutItem>
 
     <FlyoutItem
@@ -31,7 +39,7 @@
     </FlyoutItem>
 
     <FlyoutItem
-        Title="🏛️ Politica"
+        Title="🏛️ Politică"
         Route="PoliticaPage">
         <ShellContent
             ContentTemplate="{DataTemplate local:News.PoliticaPage}"
@@ -79,7 +87,7 @@
     </FlyoutItem>
 
     <FlyoutItem
-        Title="⚕️ Sanatate"
+        Title="⚕️ Sănătate"
         Route="SanatatePage">
         <ShellContent
     ContentTemplate="{DataTemplate local:News.SanatatePage}"
@@ -91,12 +99,18 @@
     Route="SocialePage">
         <ShellContent
             ContentTemplate="{DataTemplate local:News.SocialePage}"
-            Route="SocialePage" Shell.NavBarIsVisible="False"/>
+            Route="SocialePage" />
     </FlyoutItem>
 
-    <MenuItem
-        Text="🚪 Logout"
-        Clicked="MenuItem_Clicked"
-        IsDestructive="True" />
+
+
+    <Shell.FlyoutFooter>
+        <StackLayout Padding="10">
+            <Button Text="🚪 Deconectează-te"
+                Clicked="MenuItem_Clicked"
+                BackgroundColor="#202020"
+                TextColor="White" />
+        </StackLayout>
+    </Shell.FlyoutFooter>
 
 </Shell>

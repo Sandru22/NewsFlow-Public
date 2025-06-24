@@ -1,4 +1,5 @@
 ﻿using NewsFlow.Login;
+using NewsFlow.Models;
 using NewsFlow.ViewModels;
 
 namespace NewsFlow.News;
@@ -11,7 +12,9 @@ public partial class AutoPage : ContentPage
 #if WINDOWS
         Shell.SetNavBarIsVisible(this, false);
 #endif
-        BindingContext = new NewsViewModel("auto");
+        var viewModel = new NewsViewModel("auto");
+        viewModel.ScrollToItemCallback = ScrollToItem;
+        BindingContext = viewModel;
     }
 
 
@@ -31,5 +34,16 @@ public partial class AutoPage : ContentPage
         {
             viewModel.RefreshCommand.Execute(null);
         }
+    }
+
+    public void ScrollToItem(NewsItem item)
+    {
+        if (item == null) return;
+
+#if ANDROID || IOS
+    NewsListView_Android.ScrollTo(item, position: ScrollToPosition.Start, animate: true);
+#elif WINDOWS
+        NewsListView_Windows.ScrollTo(item, position: ScrollToPosition.Start, animate: true);
+#endif
     }
 }

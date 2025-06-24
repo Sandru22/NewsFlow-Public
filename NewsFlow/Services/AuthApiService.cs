@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Maui.ApplicationModel.Communication;
 using NewsFlow.Models;
+using NewsFlow.Services;
 
 public class AuthApiService
 {
@@ -23,13 +24,17 @@ public class AuthApiService
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
     }
-    public async Task<bool> Register(string fullName, string email, string password)
+
+
+    public async Task<bool> Register(string username, string email, string password)
     {
-        var content = new StringContent(JsonSerializer.Serialize(new { FullName = fullName, Email = email, Password = password }),
+        var content = new StringContent(JsonSerializer.Serialize(new { UserName = username, Email = email, FullName = username, Password = password }),
             Encoding.UTF8, "application/json");
         var response = await _httpClient.PostAsync("auth/register", content);
         return response.IsSuccessStatusCode;
     }
+
+
     public async Task<string> Login(string email, string password)
     {
 
@@ -48,9 +53,4 @@ public class AuthApiService
 
         return result?.Token;
     }
-}
-
-public class LoginResponse
-{
-    public string Token { get; set; }
 }

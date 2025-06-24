@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
+
 namespace NewsFlow
 {
     [Application]
@@ -12,5 +13,7 @@ namespace NewsFlow
         }
 
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+
+
     }
 }
