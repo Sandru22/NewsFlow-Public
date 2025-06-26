@@ -19,6 +19,13 @@ public partial class NewsPage : ContentPage
         BindingContext = viewModel;
     }
 
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        var viewModel = BindingContext as NewsViewModel;
+        viewModel?.StopTtsCommand.Execute(null);
+    }
     private async void OnCollectionViewRemainingItemsThresholdReached(object sender, EventArgs e)
     {
         var viewModel = (NewsViewModel)BindingContext;
@@ -58,7 +65,7 @@ public partial class NewsPage : ContentPage
 
     private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
-        // Dacă utilizatorul șterge tot, reîncarcă știrile normale
+       
         if (string.IsNullOrWhiteSpace(e.NewTextValue))
         {
             var viewModel = (NewsViewModel)BindingContext;

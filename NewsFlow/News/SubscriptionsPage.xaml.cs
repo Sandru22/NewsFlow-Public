@@ -15,7 +15,13 @@ public partial class SubscriptionsPage : ContentPage
         viewModel.ScrollToItemCallback = ScrollToItem;
         BindingContext = viewModel;
     }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
 
+        var viewModel = BindingContext as NewsViewModel;
+        viewModel?.StopTtsCommand.Execute(null);
+    }
     private void OnCollectionViewRemainingItemsThresholdReached(object sender, EventArgs e)
     {
         var vm = (SubscribedNewsViewModel)BindingContext;

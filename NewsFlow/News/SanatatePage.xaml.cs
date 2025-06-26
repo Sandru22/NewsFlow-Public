@@ -15,7 +15,13 @@ public partial class SanatatePage : ContentPage
         viewModel.ScrollToItemCallback = ScrollToItem;
         BindingContext = viewModel;
     }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
 
+        var viewModel = BindingContext as NewsViewModel;
+        viewModel?.StopTtsCommand.Execute(null);
+    }
 
     private async void OnCollectionViewRemainingItemsThresholdReached(object sender, EventArgs e)
     {

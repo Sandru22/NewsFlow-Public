@@ -87,7 +87,7 @@
             <Button Text="⏭️ Înainte" Command="{Binding NextNewsTtsCommand}" BackgroundColor="Gray" TextColor="White" />
         </StackLayout>
 
-        <!-- Android / iOS CollectionView with RefreshView -->
+        <!-- Android CollectionView with RefreshView -->
         <RefreshView IsRefreshing="{Binding IsRefreshing}"
                      Command="{Binding Path=BindingContext.RefreshCommand, Source={x:Reference ActualePageRoot}}"
                      IsVisible="{OnPlatform WinUI=False, Android=True, iOS=True}"

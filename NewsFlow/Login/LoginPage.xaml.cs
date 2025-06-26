@@ -38,7 +38,7 @@ public partial class LoginPage : ContentPage
 
 
 
-                    string userId = ExtractUserIdFromToken(token); // vezi mai jos funcția
+                    string userId = ExtractUserIdFromToken(token);
 
 
                     var deviceToken = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
@@ -52,7 +52,7 @@ public partial class LoginPage : ContentPage
 
             }
 #endif
-                // Navighează în AppShell, nu doar NewsPage
+                
                 Application.Current.MainPage = new AppShell();
             }
             else
@@ -63,8 +63,7 @@ public partial class LoginPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Eroare", $"A apărut o eroare:\n{ex.Message}", "OK");
-            // Dacă vrei și detalii de debugging:
-            System.Diagnostics.Debug.WriteLine(ex);
+
         }
     }
 

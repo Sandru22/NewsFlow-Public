@@ -65,6 +65,8 @@ public class NewsViewModel : BindableObject
             OnPropertyChanged();
         }
     }
+
+
     private async Task RefreshNews()
     {
         try
@@ -152,7 +154,7 @@ public class NewsViewModel : BindableObject
     }
 
 
-
+    private bool _isReadingNews = false;
     private void InitCommands()
     {
         OpenNewsCommand = new Command<NewsItem>(async (NewsItem) => await OpenBrowser(NewsItem));
@@ -163,6 +165,11 @@ public class NewsViewModel : BindableObject
         SubscribeCommand = new Command<int>(async (id) => await SubscribeToSource(id));
         ReadNewsCommand = new Command<ObservableCollection<NewsItem>>(async newsList =>
         {
+
+            if (_isReadingNews) return; 
+
+            _isReadingNews = true;
+            
             _newsListForTTS = newsList.ToList();
             _currentNewsIndex = 0;
             IsTtsControlVisible = true;
@@ -197,8 +204,12 @@ public class NewsViewModel : BindableObject
     {
         _ttsCancellationTokenSource?.Cancel();
         IsTtsControlVisible = false;
-        var current = _newsListForTTS[_currentNewsIndex];
-        current.IsHighlighted = false;
+        _isReadingNews = false;
+        if (_newsListForTTS != null && _newsListForTTS.Count > 0 && _currentNewsIndex >= 0 && _currentNewsIndex < _newsListForTTS.Count)
+        {
+            var current = _newsListForTTS[_currentNewsIndex];
+            current.IsHighlighted = false;
+        }
     });
 
     public ICommand NextNewsTtsCommand => new Command(async () =>
@@ -453,7 +464,7 @@ public class NewsViewModel : BindableObject
 #if WINDOWS
             var shareText = $"*{news.Title}*\n{news.Content}\n\n{news.Url}";
             await Clipboard.Default.SetTextAsync(shareText);
-            await Application.Current.MainPage.DisplayAlert("Share", "Conințut copiat în clipboard!", "OK");
+            await Application.Current.MainPage.DisplayAlert("Distribuire", "Conințut copiat în clipboard!", "OK");
 #endif
 
             await Share.RequestAsync(new ShareTextRequest
@@ -474,7 +485,7 @@ public class NewsViewModel : BindableObject
 
         if (!await HasInternetConnectionAsync())
         {
-            Debug.WriteLine("❌ Nu există conexiune la internet - anulăm încărcarea.");
+            
             await Application.Current.MainPage.DisplayAlert("Fără internet", "Verifică conexiunea la rețea.", "OK");
             return;
         }

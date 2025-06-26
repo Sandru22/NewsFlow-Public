@@ -17,7 +17,13 @@ public partial class AutoPage : ContentPage
         BindingContext = viewModel;
     }
 
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
 
+        var viewModel = BindingContext as NewsViewModel;
+        viewModel?.StopTtsCommand.Execute(null);
+    }
     private async void OnCollectionViewRemainingItemsThresholdReached(object sender, EventArgs e)
     {
         var viewModel = (NewsViewModel)BindingContext;
