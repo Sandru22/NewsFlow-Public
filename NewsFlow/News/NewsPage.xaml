@@ -4,8 +4,9 @@
              x:Class="NewsFlow.News.NewsPage"
              x:Name="NewsPageRoot"
              Title=""
-Shell.BackgroundColor="LightGray"
-             xmlns:local="clr-namespace:NewsFlow.Convertors">
+              Shell.BackgroundColor="LightGray"
+             xmlns:local="clr-namespace:NewsFlow.Convertors"
+             BackgroundColor="#202020">
 
 
     <ContentPage.ToolbarItems>
@@ -36,12 +37,10 @@ Shell.BackgroundColor="LightGray"
 
     <Grid RowDefinitions="Auto,Auto,*,Auto">
 
-
         <BoxView HeightRequest="10"
          HorizontalOptions="Fill"
          Color="#202020"
-          />
-
+          IsVisible="{OnPlatform WinUI=False, Android=True, iOS=True}"/>
         <!-- Header Windows -->
         <Grid ColumnDefinitions="Auto,*,Auto"
           Grid.Row="0"
@@ -54,7 +53,7 @@ Shell.BackgroundColor="LightGray"
                 BackgroundColor="LightGray"
                 Grid.Column="0"
                 VerticalOptions="Center" 
-                    />
+                 TextColor="Black"   />
 
             <Label Text="Știri pentru tine"
                FontSize="40"

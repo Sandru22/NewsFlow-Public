@@ -5,7 +5,8 @@
              x:Name="ActualePageRoot"
              Title=""
             Shell.BackgroundColor="LightGray"
-             xmlns:local="clr-namespace:NewsFlow.Convertors">
+             xmlns:local="clr-namespace:NewsFlow.Convertors"
+             BackgroundColor="#202020">
 
 
     <ContentPage.ToolbarItems>
@@ -37,10 +38,6 @@
     <Grid RowDefinitions="Auto,*,Auto">
 
 
-        <BoxView HeightRequest="10"
-         HorizontalOptions="Fill"
-         Color="#202020"
-          />
 
         <!-- Header Windows -->
         <Grid ColumnDefinitions="Auto,*,Auto"
@@ -54,7 +51,7 @@
                 BackgroundColor="LightGray"
                 Grid.Column="0"
                 VerticalOptions="Center" 
-                    />
+                 TextColor="Black"   />
 
             <Label Text="Știri Actuale"
                FontSize="40"

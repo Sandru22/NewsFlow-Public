@@ -31,26 +31,31 @@ public partial class LoginPage : ContentPage
                 await SecureStorage.SetAsync("auth_token", token);
                 Preferences.Set("remember_me", RememberMeCheckBox.IsChecked);
 #if ANDROID
-                var status = await CheckAndRequestNotificationPermissionAsync();
-
-                if (status == PermissionStatus.Granted)
+                if (RememberMeCheckBox.IsChecked)
                 {
 
 
+                    var status = await CheckAndRequestNotificationPermissionAsync();
 
-                    string userId = ExtractUserIdFromToken(token);
-
-
-                    var deviceToken = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
-
-                    var client = new HttpClient();
-                    await client.PostAsJsonAsync($"{AppConfig.ApiBaseUrl}/News/register-device", new
+                    if (status == PermissionStatus.Granted)
                     {
-                        userId = userId,
-                        deviceToken = deviceToken
-                    });
 
-            }
+
+
+                        string userId = ExtractUserIdFromToken(token);
+
+
+                        var deviceToken = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
+
+                        var client = new HttpClient();
+                        await client.PostAsJsonAsync($"{AppConfig.ApiBaseUrl}/News/register-device", new
+                        {
+                            userId = userId,
+                            deviceToken = deviceToken
+                        });
+
+                    }
+                }
 #endif
                 
                 Application.Current.MainPage = new AppShell();
@@ -72,7 +77,6 @@ public partial class LoginPage : ContentPage
         var token = await SecureStorage.GetAsync("auth_token");
         bool rememberMe = Preferences.Get("remember_me", false);
 
-        // Only navigate to NewsPage if the token is valid AND "Remember Me" is enabled
         if (!string.IsNullOrEmpty(token) && rememberMe && IsTokenValid(token))
         {
 

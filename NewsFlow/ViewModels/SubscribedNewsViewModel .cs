@@ -20,10 +20,7 @@ namespace NewsFlow.ViewModels
 
         protected override async Task<List<NewsItem>> FetchNews(string userId, int page)
         {
-            if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
-            {
-                await LocalNotificationCenter.Current.RequestNotificationPermission();
-            }
+           
             var token = await SecureStorage.GetAsync("auth_token");
 
             var url = $"{AppConfig.ApiBaseUrl}/news/subscriptions?userId={userId}&page={page}&pageSize=20";

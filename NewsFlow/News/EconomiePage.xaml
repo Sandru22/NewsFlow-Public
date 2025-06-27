@@ -5,7 +5,8 @@
              x:Name="EconomiePageRoot"
              Title=""
 Shell.BackgroundColor="LightGray"
-             xmlns:local="clr-namespace:NewsFlow.Convertors">
+             xmlns:local="clr-namespace:NewsFlow.Convertors"
+             BackgroundColor="#202020">
 
 
     <ContentPage.ToolbarItems>
@@ -37,11 +38,6 @@ Shell.BackgroundColor="LightGray"
     <Grid RowDefinitions="Auto,*,Auto">
 
 
-        <BoxView HeightRequest="10"
-         HorizontalOptions="Fill"
-         Color="#202020"
-          />
-
         <!-- Header Windows -->
         <Grid ColumnDefinitions="Auto,*,Auto"
           Grid.Row="0"
@@ -54,7 +50,7 @@ Shell.BackgroundColor="LightGray"
                 BackgroundColor="LightGray"
                 Grid.Column="0"
                 VerticalOptions="Center" 
-                    />
+                 TextColor="Black"   />
 
             <Label Text="Știri Economie"
                FontSize="40"

@@ -244,7 +244,7 @@ public class NewsViewModel : BindableObject
         {
 
 #if ANDROID
-                bool goToSettings = await Application.Current.MainPage.DisplayAlert( "Limba indisponibilă", "Text-to-speech în limba română nu este disponibilă pe acest dispozitiv.\nDoriți să deschideți setările Text-to-Speech?","Da", "Nu");
+                bool goToSettings = await Application.Current.MainPage.DisplayAlert( "Limbă indisponibilă", "Text-to-speech în limba română nu este disponibilă pe acest dispozitiv.\nDoriți să deschideți setările Text-to-Speech?","Da", "Nu");
 
         if (goToSettings)
         {
@@ -253,9 +253,10 @@ public class NewsViewModel : BindableObject
 #endif
 
 #if WINDOWS
-            await Application.Current.MainPage.DisplayAlert("Limba indisponibilă", "Text-to-speech în limba română nu este disponibilă pe acest dispozitiv.\n Pentru a instala limba română accesaţi : \n - Settings > Time & Language > Speech > Add voices ", "OK");
+            await Application.Current.MainPage.DisplayAlert("Limbă indisponibilă", "Text-to-speech în limba română nu este disponibilă pe acest dispozitiv.\n Pentru a instala limba română accesaţi : \n - Settings > Time & Language > Speech > Add voices ", "OK");
 #endif
-
+            _ttsCancellationTokenSource?.Cancel();
+            IsTtsControlVisible = true;
             return;
         }
 

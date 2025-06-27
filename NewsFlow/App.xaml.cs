@@ -186,6 +186,8 @@ namespace NewsFlow
                             }
 #endif
                         }
+
+
                         else
                         {
                             Application.Current.MainPage = new NavigationPage(new LoginPage());
