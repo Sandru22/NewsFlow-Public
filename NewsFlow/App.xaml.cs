@@ -75,7 +75,7 @@ namespace NewsFlow
             try
             {
                 var token = await SecureStorage.GetAsync("auth_token");
-                var userId = GetUserIdFromToken(token); // Presupunem că ai această metodă
+                var userId = GetUserIdFromToken(token); 
 
                 var newsService = new NewsApiService();
                 var news = await newsService.GetNewsByIdAsync(newsId, userId, token);
@@ -159,7 +159,7 @@ namespace NewsFlow
                     var token = await SecureStorage.GetAsync("auth_token");
                     bool rememberMe = Preferences.Get("remember_me", false);
 
-                    // Ensure navigation happens on the main thread
+                    
                     await MainThread.InvokeOnMainThreadAsync(async () =>
                     {
                         if (!string.IsNullOrEmpty(token) && rememberMe)

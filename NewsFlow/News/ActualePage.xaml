@@ -59,7 +59,8 @@
                HorizontalOptions="CenterAndExpand"
                VerticalOptions="Center"
                Grid.Row="0"
-               Grid.Column="1" />
+               Grid.Column="1" 
+                   TextColor="White"/>
 
             <Button Text="🔊 Ascultă Știrile"
                 Command="{Binding ReadNewsCommand}"

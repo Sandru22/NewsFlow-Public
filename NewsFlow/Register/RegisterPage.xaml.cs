@@ -15,7 +15,13 @@ public partial class RegisterPage : ContentPage
 
     private async void OnRegisterClicked(object sender, EventArgs e)
     {
-        if(PasswordEntry.Text != ConfirmPasswordEntry.Text)
+
+        if (FullNameEntry.Text.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > 1)
+        {
+            await DisplayAlert("Eroare", "Te rugăm să introduci un singur nume (fără spații).", "OK");
+            return;
+        }
+        if (PasswordEntry.Text != ConfirmPasswordEntry.Text)
         {
             await DisplayAlert("Eroare", "Parolele nu se potrivesc!", "OK");
             return;

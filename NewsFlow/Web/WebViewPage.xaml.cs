@@ -30,7 +30,7 @@ public partial class WebViewPage : ContentPage
         NewsWebView.Source = news.Url;
         Debug.WriteLine("WebViewPage: " + news.Url);
 
-        Site = ExtractSiteFromUrl(_url); // setezi proprietatea aici
+        Site = ExtractSiteFromUrl(_url); 
         Debug.WriteLine("Site" + Site);
         BindingContext = _newsItem;
 

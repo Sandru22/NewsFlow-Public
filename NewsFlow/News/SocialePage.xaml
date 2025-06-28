@@ -43,7 +43,7 @@ Shell.BackgroundColor="LightGray"
           Grid.Row="0"
           Padding="10"
           IsVisible="{OnPlatform WinUI=True, Android=False, iOS=False}"
-            >
+           >
 
             <Button Text="🔄 Reîncarcă pagina"
                 Clicked="Button_Clicked"
@@ -58,7 +58,8 @@ Shell.BackgroundColor="LightGray"
                HorizontalOptions="CenterAndExpand"
                VerticalOptions="Center"
                Grid.Row="0"
-               Grid.Column="1" />
+               Grid.Column="1" 
+                  TextColor="White"/>
 
             <Button Text="🔊 Ascultă Știrile"
                 Command="{Binding ReadNewsCommand}"
